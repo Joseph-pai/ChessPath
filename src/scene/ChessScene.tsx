@@ -34,7 +34,7 @@ export function ChessScene() {
       gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
     >
       <color attach="background" args={['#0b1016']} />
-      <fog attach="fog" args={['#0b1016', 17, 36]} />
+      <fog attach="fog" args={['#0b1016', 20, 52]} />
 
       <ambientLight intensity={0.7} />
       <directionalLight
@@ -68,7 +68,7 @@ export function ChessScene() {
         enableDamping
         dampingFactor={0.08}
         minDistance={5}
-        maxDistance={20}
+        maxDistance={40}
         minPolarAngle={0.16}
         maxPolarAngle={Math.PI / 2.05}
         target={[0, 0, 0]}

@@ -5,7 +5,7 @@ import { useBoard } from '../store/board'
 import { squareToWorld } from '../lib/chessEngine'
 
 export function CameraRig() {
-  const { camera, controls } = useThree()
+  const { camera, controls, viewport } = useThree()
   const orientation = useBoard((s) => s.orientation)
   const focusSquare = useBoard((s) => s.focusSquare)
   const focusSeq = useBoard((s) => s.focusSeq)
@@ -16,21 +16,31 @@ export function CameraRig() {
 
   useEffect(() => {
     const target = new THREE.Vector3(0, 0, 0)
-    const position = orientation === 'w' ? new THREE.Vector3(0, 7.6, 9.4) : new THREE.Vector3(0, 7.6, -9.4)
+    const sign = orientation === 'w' ? 1 : -1
+    let position: THREE.Vector3
 
     if (focusSquare) {
       const [x, , z] = squareToWorld(focusSquare)
-      const sign = orientation === 'w' ? 1 : -1
       const wx = orientation === 'w' ? x : -x
       const wz = orientation === 'w' ? z : -z
       target.set(wx, 0.25, wz)
-      position.set(wx, 4.9, wz + sign * 4.9)
+      position = new THREE.Vector3(wx, 4.9, wz + sign * 4.9)
+    } else {
+      // 依据屏幕宽高比调整默认机位：竖屏时拉远，保证棋盘完整入镜
+      const fovHalf = THREE.MathUtils.degToRad(22.5)
+      const aspect = Math.max(viewport.aspect, 0.01)
+      const dist = Math.max(
+        12.09,
+        4.6 / (Math.tan(fovHalf) * aspect),
+        5.2 / Math.tan(fovHalf),
+      )
+      position = new THREE.Vector3(0, 7.6, sign * 9.4).multiplyScalar(dist / 12.09)
     }
 
     desiredTarget.current.copy(target)
     desiredPos.current.copy(position)
     animating.current = true
-  }, [focusSeq, focusSquare, orientation])
+  }, [focusSeq, focusSquare, orientation, viewport.aspect])
 
   useFrame(() => {
     if (!animating.current || !controls) return
