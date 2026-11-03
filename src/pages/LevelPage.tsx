@@ -270,8 +270,8 @@ export function LevelPage() {
         useBoard.getState().autoMove(m)
         if (i === demo.moves.length - 1) {
           setDemoRunning(false)
-          setFeedback({ tone: 'info', text: demo.text })
           markSeen(demo.id)
+          setFeedback({ tone: 'info', text: demo.text })
         }
       }, delay)
       delay += 850
