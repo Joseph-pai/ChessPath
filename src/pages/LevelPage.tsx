@@ -322,6 +322,11 @@ export function LevelPage() {
     setIndex(0)
   }
 
+  const goToStep = (i: number) => {
+    if (!level) return
+    setIndex(Math.max(0, Math.min(i, level.steps.length - 1)))
+  }
+
   useEffect(() => () => clearTimers(), [clearTimers])
 
   if (!level) {
@@ -350,7 +355,7 @@ export function LevelPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Link to="/" className="text-sm text-slate-500 transition hover:text-white">
-                ← 地图
+                ← 首页
               </Link>
               <span className="chip" style={{ borderColor: `${level.accent}55`, color: level.accent }}>
                 Level {level.id}
@@ -361,7 +366,7 @@ export function LevelPage() {
               <span className="text-[11px] text-slate-500">
                 第 {index + 1} / {level.steps.length} 步
               </span>
-              <ProgressDots total={level.steps.length} current={index} />
+              <ProgressDots total={level.steps.length} current={index} onSelect={goToStep} />
             </div>
           </div>
           <BoardStage className="min-h-[46vh] flex-1 lg:min-h-0" />

@@ -43,11 +43,6 @@ export const useProgress = create<ProgressState>()(
   ),
 )
 
-export function isUnlocked(levelId: number, completed: number[]): boolean {
-  if (levelId === 10) return true
-  return completed.includes(levelId + 1)
-}
-
 export function stepProgressFor(levelId: number, steps: number): number {
   const done = useProgress.getState().stepIndex[levelId] ?? 0
   return Math.min(done, steps)

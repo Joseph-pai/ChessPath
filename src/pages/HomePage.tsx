@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { REVIEW_PLAYERS, getLevel } from '../data/levels'
-import { isUnlocked, useProgress } from '../store/progress'
+import { useProgress } from '../store/progress'
 
 const MINI_BOARD = [
   ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
@@ -97,7 +97,7 @@ export function HomePage() {
             <h2 className="mt-3 font-serif text-3xl text-white">十段位地图</h2>
           </div>
           <p className="max-w-md text-sm leading-6 text-slate-500">
-            按 10 → 1 的顺序解锁。每个段位完成所有步骤后，下一段位自动打开；进度会保存在这台设备上。
+            按 10 → 1 的顺序排列，可自由选择任意段位开始学习；进度会保存在这台设备上。
           </p>
         </div>
 
@@ -106,7 +106,6 @@ export function HomePage() {
             const level = getLevel(id)
             const player = REVIEW_PLAYERS[id]
             const done = completed.includes(id)
-            const unlocked = isUnlocked(id, completed)
             const available = Boolean(level)
             const title = level?.title ?? (player ? `${player.zh}的思维课` : '名局复盘')
             const tagline = level?.tagline ?? (player ? `核心思维：${player.model}` : '内容准备中')
@@ -115,10 +114,10 @@ export function HomePage() {
             return (
               <button
                 key={id}
-                disabled={!unlocked || !available}
+                disabled={!available}
                 onClick={() => navigate(`/level/${id}`)}
                 className={`group relative overflow-hidden rounded-2xl border px-5 py-5 text-left transition ${
-                  unlocked && available
+                  available
                     ? 'border-line/80 bg-panel/60 hover:border-brass/50 hover:bg-panel'
                     : 'cursor-not-allowed border-line/40 bg-panel/25 opacity-60'
                 }`}
@@ -134,14 +133,13 @@ export function HomePage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-[15px] font-semibold text-slate-100">{title}</h3>
                       {done && <span className="chip border-mint/40 text-mint">已完成</span>}
-                      {!done && unlocked && <span className="chip border-brass/40 text-brass">可进入</span>}
-                      {!unlocked && <span className="chip">未解锁</span>}
+                      {!done && <span className="chip border-brass/40 text-brass">可进入</span>}
                       {player && <span className="chip">{player.en}</span>}
                     </div>
                     <p className="mt-1.5 text-sm text-slate-500">{tagline}</p>
                   </div>
                   <span className="hidden text-xs text-slate-500 sm:block">{level ? `${level.steps.length} 个步骤` : ''}</span>
-                  <span className="text-slate-500 transition group-hover:translate-x-0.5">{unlocked && available ? '→' : '🔒'}</span>
+                  <span className="text-slate-500 transition group-hover:translate-x-0.5">{available ? '→' : '🔒'}</span>
                 </div>
               </button>
             )
