@@ -9,6 +9,7 @@ interface ProgressState {
   markStep: (levelId: number, index: number) => void
   completeLevel: (levelId: number) => void
   markReview: (reviewId: string) => void
+  resetLevel: (levelId: number) => void
   resetAll: () => void
 }
 
@@ -35,6 +36,7 @@ export const useProgress = create<ProgressState>()(
         }),
       markReview: (reviewId) =>
         set((s) => ({ reviewsDone: s.reviewsDone.includes(reviewId) ? s.reviewsDone : [...s.reviewsDone, reviewId] })),
+      resetLevel: (levelId) => set((s) => ({ stepIndex: { ...s.stepIndex, [levelId]: 0 } })),
       resetAll: () => set({ ...initial }),
     }),
     { name: 'chesspath-progress-v1' },

@@ -26,6 +26,7 @@ export function LevelPage() {
   const reviewsDone = useProgress((s) => s.reviewsDone)
   const markStep = useProgress((s) => s.markStep)
   const completeLevel = useProgress((s) => s.completeLevel)
+  const resetLevel = useProgress((s) => s.resetLevel)
 
   const [index, setIndex] = useState(0)
   const [solved, setSolved] = useState(false)
@@ -314,6 +315,13 @@ export function LevelPage() {
     setAttempts(0)
   }
 
+  const restartLevel = () => {
+    if (!level) return
+    resetLevel(level.id)
+    clearTimers()
+    setIndex(0)
+  }
+
   useEffect(() => () => clearTimers(), [clearTimers])
 
   if (!level) {
@@ -363,9 +371,14 @@ export function LevelPage() {
           <div className="border-b border-line/60 px-5 py-4">
             <div className="flex items-center justify-between gap-3">
               <p className="kicker">{step.kicker ?? `Step ${index + 1}`}</p>
-              <button onClick={restartPosition} className="text-[11px] text-slate-500 transition hover:text-brass">
-                还原本步
-              </button>
+              <div className="flex items-center gap-3">
+                <button onClick={restartLevel} className="text-[11px] text-slate-500 transition hover:text-brass">
+                  重新开始本课
+                </button>
+                <button onClick={restartPosition} className="text-[11px] text-slate-500 transition hover:text-brass">
+                  还原本步
+                </button>
+              </div>
             </div>
             <h1 className="mt-2 font-serif text-2xl leading-snug text-white">{step.title}</h1>
             {goalText && <p className="mt-2 text-xs text-slate-500">{goalText}</p>}
