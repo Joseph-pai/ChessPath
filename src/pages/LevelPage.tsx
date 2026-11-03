@@ -232,7 +232,7 @@ export function LevelPage() {
     if (info.targets.length === 0) {
       setFeedback({ tone: 'info', text: `${name}（${entry?.en ?? ''}）在 ${info.square}，现在被自己的兵挡住了。先把挡在它前面的兵走开，再点它就能看到走法。` })
     } else {
-      setFeedback({ tone: 'info', text: `${name}（${entry?.en ?? ''}）在 ${info.square}。绿色圆点/圆环就是它现在能去的位置。` })
+      setFeedback({ tone: 'info', text: `${name}（${entry?.en ?? ''}）在 ${info.square}。蓝色圆点/圆环就是它现在能去的位置。` })
     }
   }, [])
 
@@ -483,7 +483,7 @@ export function LevelPage() {
 
             {feedback && (
               <div
-                className={`mt-4 rounded-xl border px-3 py-3 text-sm leading-6 ${
+                className={`mt-4 whitespace-pre-line rounded-xl border px-3 py-3 text-sm leading-6 ${
                   feedback.tone === 'good'
                     ? 'border-mint/40 bg-mint/5 text-mint'
                     : feedback.tone === 'bad'

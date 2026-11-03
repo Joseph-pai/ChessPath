@@ -77,14 +77,14 @@ export function Highlights() {
           return (
             <mesh key={`cap-${sq}`} position={[x, 0.07, z]} rotation={[-Math.PI / 2, 0, 0]}>
               <ringGeometry args={[0.3, 0.37, 32]} />
-              <meshBasicMaterial color="#7fd3b4" transparent opacity={0.75} depthWrite={false} side={THREE.DoubleSide} />
+              <meshBasicMaterial color="#3b82f6" transparent opacity={0.9} depthWrite={false} side={THREE.DoubleSide} />
             </mesh>
           )
         }
         return (
           <mesh key={`dot-${sq}`} position={[x, 0.07, z]}>
             <cylinderGeometry args={[0.105, 0.105, 0.01, 24]} />
-            <meshBasicMaterial color="#7fd3b4" transparent opacity={0.85} depthWrite={false} />
+            <meshBasicMaterial color="#3b82f6" transparent opacity={0.95} depthWrite={false} />
           </mesh>
         )
       })}
