@@ -64,7 +64,7 @@ export function ChessScene() {
       <CameraRig />
       <OrbitControls
         makeDefault
-        enablePan={false}
+        enablePan={true}
         enableDamping
         dampingFactor={0.08}
         minDistance={5}
