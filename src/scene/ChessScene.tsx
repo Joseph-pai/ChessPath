@@ -31,15 +31,15 @@ export function ChessScene() {
       shadows
       dpr={[1, 1.8]}
       camera={{ position: [0, 7.6, 9.4], fov: 45, near: 0.1, far: 60 }}
-      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}
+      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
     >
-      <color attach="background" args={['#0b1016']} />
-      <fog attach="fog" args={['#0b1016', 20, 52]} />
+      <color attach="background" args={['#353d4a']} />
+      <fog attach="fog" args={['#353d4a', 20, 55]} />
 
-      <ambientLight intensity={0.7} />
+      <ambientLight intensity={0.95} />
       <directionalLight
         position={[6, 11, 6]}
-        intensity={1.9}
+        intensity={2.5}
         color="#fff4dd"
         castShadow
         shadow-mapSize={[1024, 1024]}
@@ -49,7 +49,8 @@ export function ChessScene() {
         shadow-camera-bottom={-7}
         shadow-bias={-0.0004}
       />
-      <directionalLight position={[-7, 6, -5]} intensity={0.5} color="#9fc2ff" />
+      <directionalLight position={[-7, 6, -5]} intensity={0.75} color="#9fc2ff" />
+      <directionalLight position={[0, 10, 0]} intensity={0.5} color="#ffffff" />
 
       <Reveal>
         <group rotation={[0, orientation === 'w' ? 0 : Math.PI, 0]}>
@@ -60,7 +61,7 @@ export function ChessScene() {
         </group>
       </Reveal>
 
-      <ContactShadows position={[0, -0.4, 0]} opacity={0.5} scale={14} blur={2.6} far={5} color="#000000" />
+      <ContactShadows position={[0, -0.4, 0]} opacity={0.42} scale={14} blur={2.6} far={5} color="#000000" />
       <CameraRig />
       <OrbitControls
         makeDefault
