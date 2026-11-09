@@ -249,13 +249,13 @@ export function PlayPage() {
             </div>
 
             {coaching && (
-              <div className="shrink-0 border-b border-line/60 bg-white/[0.02] px-5 py-4">
+              <div className="max-h-[46vh] shrink-0 overflow-y-auto border-b border-line/60 bg-white/[0.06] px-5 py-4">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mint">教练建议 · 入门</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.14em] text-mint">教练建议 · 入门</p>
                   {coach?.recommend && (
                     <button
                       onClick={toggleArrow}
-                      className="rounded-full border border-line/80 px-2.5 py-1 text-[11px] text-slate-400 transition hover:text-white"
+                      className="rounded-full border border-line px-3 py-1.5 text-sm text-slate-200 transition hover:border-brass hover:text-white"
                     >
                       {showArrow ? '隐藏箭头' : '标到棋盘'}
                     </button>
@@ -263,28 +263,28 @@ export function PlayPage() {
                 </div>
 
                 {thinking ? (
-                  <p className="mt-2 text-xs leading-5 text-slate-500">对方正在应对这一步……</p>
+                  <p className="mt-3 text-base leading-7 text-slate-300">对方正在应对这一步……</p>
                 ) : coach?.recommend ? (
                   <>
-                    <p className="mt-2 font-mono text-lg leading-6 text-white">{coach.recommend.san}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-400">{coach.recommend.why}</p>
+                    <p className="mt-2 font-mono text-3xl font-semibold leading-tight text-white">{coach.recommend.san}</p>
+                    <p className="mt-2 text-base leading-7 text-slate-200">{coach.recommend.why}</p>
                     {coach.opponentReply && (
-                      <p className="mt-2 text-xs leading-5 text-slate-400">
-                        若你走 <span className="font-mono text-brass">{coach.recommend.san}</span>，对方最可能回应{' '}
-                        <span className="font-mono text-slate-200">{coach.opponentReply.san}</span>。
-                        <span className="mt-0.5 block text-slate-500">{coach.opponentReply.why}</span>
+                      <p className="mt-3 text-base leading-7 text-slate-200">
+                        若你走 <span className="font-mono font-semibold text-brass">{coach.recommend.san}</span>，对方最可能回应{' '}
+                        <span className="font-mono font-semibold text-white">{coach.opponentReply.san}</span>。
+                        <span className="mt-1 block text-slate-300">{coach.opponentReply.why}</span>
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="mt-2 text-xs leading-5 text-slate-500">等对方走完，这里会给出建议。</p>
+                  <p className="mt-3 text-base leading-7 text-slate-300">等对方走完，这里会给出建议。</p>
                 )}
 
                 {coach?.tips.length ? (
-                  <ul className="mt-3 space-y-1.5">
+                  <ul className="mt-4 space-y-2">
                     {coach.tips.map((t, i) => (
-                      <li key={i} className="flex gap-2 text-xs leading-5 text-slate-500">
-                        <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-brass" />
+                      <li key={i} className="flex gap-2.5 text-base leading-7 text-slate-200">
+                        <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-brass" />
                         <span>{t}</span>
                       </li>
                     ))}
