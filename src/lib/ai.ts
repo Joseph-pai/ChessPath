@@ -34,7 +34,7 @@ function evaluateSide(chess: Chess): number {
       let v = VALUES[piece.type] ?? 0
       const idx = r * 8 + f
       if (piece.type === 'p') {
-        const relative = piece.color === 'w' ? 7 - r : r
+        const relative = piece.color === 'w' ? r : 7 - r
         v += PAWN_TABLE[relative * 8 + f]
       } else if (piece.type !== 'k') {
         v += CENTER_TABLE[idx] * 0.6
@@ -118,4 +118,29 @@ export function chooseMove(fen: string, elo: number): string | null {
     }
   }
   return bestMoves[Math.floor(Math.random() * bestMoves.length)].san
+}
+
+/** 返回指定深度下评分最高的一步棋（不加随机性，用于教学建议）。 */
+export function bestMove(fen: string, depth: number): { san: string; score: number } | null {
+  let chess: Chess
+  try {
+    chess = new Chess(fen)
+  } catch {
+    return null
+  }
+  const legal = chess.moves({ verbose: true }) as Move[]
+  if (!legal.length) return null
+
+  let bestScore = -Infinity
+  let bestSan: string | null = null
+  for (const m of legal) {
+    chess.move(m.san)
+    const score = -negamax(chess, depth - 1, -Infinity, Infinity)
+    chess.undo()
+    if (score > bestScore) {
+      bestScore = score
+      bestSan = m.san
+    }
+  }
+  return bestSan ? { san: bestSan, score: bestScore } : null
 }

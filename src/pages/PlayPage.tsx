@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom'
 import { Chess } from 'chess.js'
 import { BoardStage } from '../components/BoardStage'
 import { START_FEN, statusText } from '../lib/chessEngine'
+import { coachPlan, type CoachPlan } from '../lib/coach'
 import { requestAiMove } from '../lib/stockfish'
 import { useBoard } from '../store/board'
 
 const LEVELS = [
-  { elo: 700, label: '入门', note: '会漏看简单威胁，适合刚学走法。' },
+  { elo: 700, label: '入门', note: '会漏看简单威胁，适合刚学走法，附教练建议。' },
   { elo: 1000, label: '初级', note: '会吃明显可吃的子，偶尔看到一步威胁。' },
   { elo: 1300, label: '中级', note: '能计算两三步，开始保护自己的子。' },
   { elo: 1700, label: '高级', note: '更少失误，会利用你的结构弱点。' },
@@ -20,6 +21,8 @@ export function PlayPage() {
   const [elo, setElo] = useState(700)
   const [result, setResult] = useState<{ title: string; text: string } | null>(null)
   const [thinking, setThinking] = useState(false)
+  const [coach, setCoach] = useState<CoachPlan | null>(null)
+  const [showArrow, setShowArrow] = useState(false)
 
   const colorRef = useRef(color)
   const eloRef = useRef(elo)
@@ -84,6 +87,8 @@ export function PlayPage() {
     clearTimers()
     setResult(null)
     setThinking(false)
+    setCoach(null)
+    setShowArrow(false)
     useBoard.getState().loadPosition(START_FEN, {
       mode: 'play',
       interaction: 'move',
@@ -102,6 +107,8 @@ export function PlayPage() {
     useBoard.getState().setCallbacks({
       onMove: () => {
         if (!startedRef.current) return
+        useBoard.getState().setVisuals({ arrows: [] })
+        setShowArrow(false)
         if (finishIfOver()) return
         const g = useBoard.getState().game
         if (g.turn() !== colorRef.current) requestAi()
@@ -116,10 +123,36 @@ export function PlayPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // 入门模式：轮到玩家时生成教练建议
+  useEffect(() => {
+    if (!started || elo !== 700) {
+      setCoach(null)
+      setShowArrow(false)
+      return
+    }
+    const g = useBoard.getState().game
+    if (g.isGameOver() || g.turn() !== colorRef.current) return
+    setCoach(coachPlan(fen, colorRef.current))
+    setShowArrow(false)
+    useBoard.getState().setVisuals({ arrows: [] })
+  }, [fen, started, elo, color])
+
   const resign = () => {
     clearTimers()
     useBoard.getState().setLocked(true)
     setResult({ title: '你认输了', text: '认输不是失败，是承认自己看不到解法。换一局，再试一次。' })
+  }
+
+  const coaching = started && elo === 700
+
+  const toggleArrow = () => {
+    const rec = coach?.recommend
+    if (!rec) return
+    const next = !showArrow
+    setShowArrow(next)
+    useBoard.getState().setVisuals({
+      arrows: next ? [{ from: rec.from, to: rec.to, color: '#3b82f6' }] : [],
+    })
   }
 
   const status = statusText(fen)
@@ -155,7 +188,7 @@ export function PlayPage() {
             <p className="kicker">FREE PLAY</p>
             <h1 className="mt-2 font-serif text-2xl text-white">自由对弈</h1>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              没有教学提示，没有剧本。选一个难度，下完一整盘。走完记得回看记录。
+              选一个难度，下完一整盘。入门难度会实时给出教练建议；其他难度全靠你自己。走完记得回看记录。
             </p>
 
             <p className="mt-6 text-xs font-medium text-slate-300">选择执棋颜色</p>
@@ -214,6 +247,51 @@ export function PlayPage() {
                 </p>
               }
             </div>
+
+            {coaching && (
+              <div className="shrink-0 border-b border-line/60 bg-white/[0.02] px-5 py-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-mint">教练建议 · 入门</p>
+                  {coach?.recommend && (
+                    <button
+                      onClick={toggleArrow}
+                      className="rounded-full border border-line/80 px-2.5 py-1 text-[11px] text-slate-400 transition hover:text-white"
+                    >
+                      {showArrow ? '隐藏箭头' : '标到棋盘'}
+                    </button>
+                  )}
+                </div>
+
+                {thinking ? (
+                  <p className="mt-2 text-xs leading-5 text-slate-500">对方正在应对这一步……</p>
+                ) : coach?.recommend ? (
+                  <>
+                    <p className="mt-2 font-mono text-lg leading-6 text-white">{coach.recommend.san}</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-400">{coach.recommend.why}</p>
+                    {coach.opponentReply && (
+                      <p className="mt-2 text-xs leading-5 text-slate-400">
+                        若你走 <span className="font-mono text-brass">{coach.recommend.san}</span>，对方最可能回应{' '}
+                        <span className="font-mono text-slate-200">{coach.opponentReply.san}</span>。
+                        <span className="mt-0.5 block text-slate-500">{coach.opponentReply.why}</span>
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="mt-2 text-xs leading-5 text-slate-500">等对方走完，这里会给出建议。</p>
+                )}
+
+                {coach?.tips.length ? (
+                  <ul className="mt-3 space-y-1.5">
+                    {coach.tips.map((t, i) => (
+                      <li key={i} className="flex gap-2 text-xs leading-5 text-slate-500">
+                        <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-brass" />
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            )}
 
             <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
               {historyRows.length === 0 ? (
